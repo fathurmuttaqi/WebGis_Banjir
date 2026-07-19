@@ -12,6 +12,11 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      alert("Email dan password wajib diisi.");
+      return;
+    }
+
     try {
       const res = await API.post("/auth/login", {
         email,
@@ -44,7 +49,49 @@ function Login() {
     }
   };
 
-  // JSX tetap seperti sebelumnya...
+  return (
+    <div className="login-container">
+      <div className="login-card">
+        <h2>Login WebGIS</h2>
+
+        <input
+          type="email"
+          placeholder="Masukkan Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <div className="password-group">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Masukkan Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button
+            type="button"
+            className="eye-btn"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FiEyeOff /> : <FiEye />}
+          </button>
+        </div>
+
+        <button
+          className="login-btn"
+          onClick={handleLogin}
+        >
+          Login
+        </button>
+
+        <p className="login-link">
+          Belum punya akun?
+          <Link to="/register"> Daftar</Link>
+        </p>
+      </div>
+    </div>
+  );
 }
 
 export default Login;
