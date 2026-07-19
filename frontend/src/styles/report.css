@@ -1,0 +1,47 @@
+.table-card{
+    background:#fff;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    overflow:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#2563EB;
+    color:white;
+    padding:12px;
+    text-align:left;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #eee;
+}
+
+tr:hover{
+    background:#f5f7fb;
+}
+
+.filter-box{
+    display:flex;
+    gap:15px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+}
+
+.filter-box input,
+.filter-box select{
+    padding:10px 15px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:14px;
+}
+
+.filter-box input{
+    width:250px;
+}

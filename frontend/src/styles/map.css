@@ -1,0 +1,43 @@
+.map-layout{
+
+    display:grid;
+
+    grid-template-columns:4fr 1fr;
+
+    gap:20px;
+
+}
+
+.map-container{
+
+    background:white;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+}
+
+.map-sidebar{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+
+}
+
+.map-sidebar>div{
+
+    background:white;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+
+}

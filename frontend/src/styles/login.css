@@ -1,0 +1,117 @@
+.login-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:
+        linear-gradient(rgba(255,255,255,.75),rgba(255,255,255,.75)),
+        url("C:\Users\Lenovo\OneDrive - ITPLN\Gambar watermawk\Web_GIS_Banjir\webgis-banjir\frontend\src\assets\WhatsApp Image 2026-07-19 at 23.18.51.jpeg");
+    background-size:cover;
+    background-position:center;
+}
+.login-card{
+    width:400px;
+    background:#fff;
+    padding:40px;
+    border-radius:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,.12);
+}
+
+.login-card h2{
+    text-align:center;
+    margin-bottom:35px;
+    font-size:38px;
+    font-weight:700;
+}
+
+/* ========================= */
+/* Input */
+/* ========================= */
+
+.login-card input{
+    width:100%;
+    padding:14px;
+    border:1px solid #ddd;
+    border-radius:10px;
+    box-sizing:border-box;
+    font-size:15px;
+    margin-bottom:18px;
+}
+
+/* ========================= */
+/* Password */
+/* ========================= */
+
+.password-group{
+    position:relative;
+    margin-bottom:20px;
+}
+
+.password-group input{
+    margin-bottom:0;
+    padding-right:48px;
+}
+
+.eye-btn{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+
+    width:24px;
+    height:24px;
+
+    padding:0;
+    margin:0;
+
+    border:none;
+    background:transparent;
+    color:#777;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+    font-size:18px;
+}
+
+.eye-btn:hover{
+    background:transparent;
+    color:#2563eb;
+}
+
+/* ========================= */
+/* Tombol Login */
+/* ========================= */
+
+.login-btn{
+    width:100%;
+    padding:14px;
+    margin-top:25px;
+    margin-bottom:22px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:#fff;
+    font-size:16px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.login-btn:hover{
+    background:#1d4ed8;
+}
+
+.login-link{
+    text-align:center;
+    margin-top:5px;
+    font-size:15px;
+}
+
+.login-link a{
+    margin-left:5px;
+    color:#2563eb;
+    text-decoration:none;
+    font-weight:600;
+}
