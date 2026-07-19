@@ -1,123 +1,125 @@
-import MainLayout from "../layouts/MainLayout";
-import DashboardCard from "../components/Dashboardcard";
-import Top10Chart from "../components/Top10Chart";
-import MiniMap from "../components/MiniMap";
-import RiskDistributionChart from "../components/RiskDistributionChart";
+import { useState } from "react";
+import API from "../services/api";
+import { Link, useNavigate } from "react-router-dom";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import "../styles/login.css";
 
-import {
-  FaWater,
-  FaUsers,
-  FaHome,
-  FaMapMarkerAlt,
-} from "react-icons/fa";
+function Register() {
+  const navigate = useNavigate();
 
-function Home() {
+  const [nama, setNama] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [konfirmasi, setKonfirmasi] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleRegister = async () => {
+    if (!nama || !email || !password || !konfirmasi) {
+      alert("Semua data wajib diisi.");
+      return;
+    }
+
+    if (password !== konfirmasi) {
+      alert("Konfirmasi password tidak sesuai.");
+      return;
+    }
+
+    try {
+      const res = await API.post("/auth/register", {
+        nama,
+        email,
+        password,
+      });
+
+      alert(res.data.message);
+
+      if (res.data.success) {
+        navigate("/login");
+      }
+
+    } catch (err) {
+      console.error(err);
+
+      alert(
+        err.response?.data?.message ||
+        "Server tidak dapat diakses."
+      );
+    }
+  };
+
   return (
-    <MainLayout>
-      <div> </div> className="main"
+    <div className="login-container">
+      <div className="login-card">
 
-        <div className="title">
-          <h1>Dashboard</h1>
-          <p>Sistem Informasi Geografis Pemetaan Daerah Rawan Banjir</p>
+        <h2>Daftar Akun</h2>
+
+        <input
+          type="text"
+          placeholder="Nama Lengkap"
+          value={nama}
+          onChange={(e) => setNama(e.target.value)}
+        />
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        {/* Password */}
+        <div className="password-group">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button
+            type="button"
+            className="eye-btn"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FiEyeOff /> : <FiEye />}
+          </button>
         </div>
 
-        <div className="cards">
-
-          <DashboardCard
-            title="Total Kejadian"
-            value="340"
-            icon={<FaWater />}
-            color="#2563EB"
+        {/* Konfirmasi Password */}
+        <div className="password-group">
+          <input
+            type={showConfirm ? "text" : "password"}
+            placeholder="Konfirmasi Password"
+            value={konfirmasi}
+            onChange={(e) => setKonfirmasi(e.target.value)}
           />
 
-          <DashboardCard
-            title="Total Jiwa"
-            value="31.695"
-            icon={<FaUsers />}
-            color="#16A34A"
-          />
-
-          <DashboardCard
-            title="RW Terdampak"
-            value="264"
-            icon={<FaHome />}
-            color="#F59E0B"
-          />
-
-          <DashboardCard
-            title="Kecamatan"
-            value="44"
-            icon={<FaMapMarkerAlt />}
-            color="#DC2626"
-          />
-
+          <button
+            type="button"
+            className="eye-btn"
+            onClick={() => setShowConfirm(!showConfirm)}
+          >
+            {showConfirm ? <FiEyeOff /> : <FiEye />}
+          </button>
         </div>
 
-        <div className="section">
+        <button
+          className="login-btn"
+          onClick={handleRegister}
+        >
+          Daftar
+        </button>
 
-        <div className="chart">
-
-        <h2>
-        Top 10 Kelurahan
-        </h2>
-
-        <Top10Chart/>
-
-        </div>
-
-        <div className="minimap">
-
-        <h2>
-        Mini Map
-        </h2>
-
-        <div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    gap: "15px",
-    marginBottom: "10px",
-    fontSize: "13px"
-  }}
->
-
-  <span>🟢 Rendah</span>
-
-  <span>🟠 Sedang</span>
-
-  <span>🔴 Tinggi</span>
-
-</div>
-
-<MiniMap />
-
+        <p className="login-link">
+          Sudah punya akun?
+          <Link to="/login"> Login</Link>
+        </p>
 
       </div>
-
-      </div>
-
-      <div
-      style={{
-      display:"grid",
-      gridTemplateColumns:"1fr",
-      marginTop:"20px"
-      }}
-      >
-
-      <div className="chart">
-
-      <h2>
-      Distribusi Risiko
-      </h2>
-
-      <RiskDistributionChart/>
-
-      </div>
-
-
-      </div>
-    </MainLayout>
+    </div>
   );
 }
 
-export default Home;
+export default Register;
