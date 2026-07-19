@@ -3,25 +3,24 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-// Koneksi Database
+// Database
 require("./config/db");
 
-// Import Routes
+// Routes
 const authRoutes = require("./routes/authRoutes");
 const banjirRoutes = require("./routes/banjirRoutes");
+
 
 const app = express();
 
 
-// ==============================
-// Middleware CORS
-// ==============================
+// =================================
+// MIDDLEWARE
+// =================================
 
-const corsOptions = {
-    origin: [
-        "https://web-gis-banjir-ll63-2hqe6b18i-fathur1.vercel.app",
-        "https://web-gis-banjir-ll63-git-main-fathur1.vercel.app"
-    ],
+// CORS untuk Vercel + testing
+app.use(cors({
+    origin: "*",
     methods: [
         "GET",
         "POST",
@@ -32,22 +31,20 @@ const corsOptions = {
     allowedHeaders: [
         "Content-Type",
         "Authorization"
-    ],
-    credentials: true
-};
+    ]
+}));
 
-app.use(cors(corsOptions));
 
+// Body parser
 app.use(express.json());
-
 app.use(express.urlencoded({
     extended: true
 }));
 
 
-// ==============================
-// Default Route
-// ==============================
+// =================================
+// DEFAULT ROUTE
+// =================================
 
 app.get("/", (req, res) => {
     res.json({
@@ -58,50 +55,55 @@ app.get("/", (req, res) => {
 });
 
 
-// ==============================
-// Routes
-// ==============================
+// =================================
+// API ROUTES
+// =================================
 
 app.use("/api/auth", authRoutes);
 
 app.use("/api/banjir", banjirRoutes);
 
 
-// ==============================
-// 404
-// ==============================
+// =================================
+// 404 HANDLER
+// =================================
 
-app.use((req,res)=>{
+app.use((req, res) => {
     res.status(404).json({
-        success:false,
-        message:"Endpoint tidak ditemukan"
+        success: false,
+        message: "Endpoint tidak ditemukan"
     });
 });
 
 
-// ==============================
-// Error Handler
-// ==============================
+// =================================
+// ERROR HANDLER
+// =================================
 
-app.use((err,req,res,next)=>{
-    console.error(err);
+app.use((err, req, res, next) => {
+
+    console.error("ERROR :", err);
 
     res.status(500).json({
-        success:false,
-        message:err.message
+        success: false,
+        message: err.message
     });
+
 });
 
 
-// ==============================
-// Server
-// ==============================
+// =================================
+// SERVER
+// =================================
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT,()=>{
-    console.log("=================================");
+
+app.listen(PORT, () => {
+
+    console.log("==============================");
     console.log("🚀 Server Running");
     console.log(`PORT : ${PORT}`);
-    console.log("=================================");
+    console.log("==============================");
+
 });
