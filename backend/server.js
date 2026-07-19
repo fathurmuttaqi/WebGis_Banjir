@@ -14,10 +14,10 @@ const app = express();
 
 
 // ==============================
-// Middleware
+// Middleware CORS
 // ==============================
 
-app.use(cors({
+const corsOptions = {
     origin: [
         "https://web-gis-banjir-ll63-2hqe6b18i-fathur1.vercel.app",
         "https://web-gis-banjir-ll63-git-main-fathur1.vercel.app"
@@ -34,11 +34,9 @@ app.use(cors({
         "Authorization"
     ],
     credentials: true
-}));
+};
 
-// Handle preflight request
-app.options("*", cors());
-
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
@@ -61,7 +59,7 @@ app.get("/", (req, res) => {
 
 
 // ==============================
-// API Routes
+// Routes
 // ==============================
 
 app.use("/api/auth", authRoutes);
@@ -70,13 +68,13 @@ app.use("/api/banjir", banjirRoutes);
 
 
 // ==============================
-// 404 Handler
+// 404
 // ==============================
 
-app.use((req, res) => {
+app.use((req,res)=>{
     res.status(404).json({
-        success: false,
-        message: "Endpoint tidak ditemukan"
+        success:false,
+        message:"Endpoint tidak ditemukan"
     });
 });
 
@@ -85,25 +83,25 @@ app.use((req, res) => {
 // Error Handler
 // ==============================
 
-app.use((err, req, res, next) => {
+app.use((err,req,res,next)=>{
     console.error(err);
 
     res.status(500).json({
         success:false,
-        message:"Internal Server Error"
+        message:err.message
     });
 });
 
 
 // ==============================
-// Jalankan Server
+// Server
 // ==============================
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log("====================================");
+app.listen(PORT,()=>{
+    console.log("=================================");
     console.log("🚀 Server Running");
-    console.log(`🌐 Port: ${PORT}`);
-    console.log("====================================");
+    console.log(`PORT : ${PORT}`);
+    console.log("=================================");
 });
