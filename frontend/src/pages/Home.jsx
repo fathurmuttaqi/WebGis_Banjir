@@ -1,5 +1,5 @@
 import MainLayout from "../layouts/MainLayout";
-import DashboardCard from "../components/DashboardCard";
+import DashboardCard from "../components/Dashboardcard";
 import Top10Chart from "../components/Top10Chart";
 import MiniMap from "../components/MiniMap";
 import RiskDistributionChart from "../components/RiskDistributionChart";
