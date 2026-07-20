@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+
+import api from "../api";
 
 import DashboardCard from "../components/DashboardCard";
 import Top10Chart from "../components/Top10Chart";
@@ -16,62 +17,133 @@ import {
 
 function Dashboard() {
 
+
   const [banjir, setBanjir] = useState([]);
 
+  const [loading, setLoading] = useState(true);
 
-  // ===============================
-  // Ambil data dari API Railway
-  // ===============================
+
+
   useEffect(() => {
 
-    axios.get(
-      "https://webgisbanjir-production.up.railway.app/api/banjir"
-    )
-    .then((response)=>{
 
-      console.log("DATA API :", response.data);
+    const getData = async () => {
 
-      setBanjir(response.data.data);
-
-    })
-    .catch((error)=>{
-
-      console.error(
-        "Gagal mengambil data banjir:",
-        error
-      );
-
-    });
-
-  },[]);
+      try {
 
 
+        const response = await api.get("/banjir");
 
-  // ===============================
-  // Statistik Dashboard
-  // ===============================
+
+        console.log(
+          "DATA DASHBOARD:",
+          response.data
+        );
+
+
+        setBanjir(
+          response.data.data || []
+        );
+
+
+      } catch(error) {
+
+
+        console.error(
+          "Gagal mengambil data banjir:",
+          error
+        );
+
+
+      } finally {
+
+
+        setLoading(false);
+
+
+      }
+
+
+    };
+
+
+
+    getData();
+
+
+  }, []);
+
+
+
+
 
   const totalJiwa = banjir.reduce(
+
     (total,item)=>
-      total + Number(item.jumlah_jiwa_terdampak || 0)
-    ,0
+
+      total +
+      Number(
+        item.jumlah_jiwa_terdampak || 0
+      ),
+
+    0
+
   );
+
+
+
 
 
   const totalRW = banjir.reduce(
+
     (total,item)=>
-      total + Number(item.jumlah_rw_terdampak || 0)
-    ,0
+
+      total +
+      Number(
+        item.jumlah_rw_terdampak || 0
+      ),
+
+    0
+
   );
 
 
+
+
+
   const totalKecamatan = [
+
     ...new Set(
+
       banjir.map(
         item=>item.kecamatan
       )
+
     )
+
   ].length;
+
+
+
+
+
+  if(loading){
+
+    return (
+
+      <div className="main">
+
+        <h2>
+          Loading Dashboard...
+        </h2>
+
+      </div>
+
+    );
+
+  }
+
+
 
 
 
@@ -80,56 +152,88 @@ function Dashboard() {
     <div className="main">
 
 
+
       <div className="title">
 
         <h1>
           Dashboard
         </h1>
 
+
         <p>
           Monitoring Daerah Rawan Banjir
         </p>
+
 
       </div>
 
 
 
-      {/* ================= CARD ================= */}
+
 
       <div className="cards">
 
 
         <DashboardCard
+
           title="Total Kejadian"
-          value={banjir.length}
+
+          value={
+            banjir.length
+          }
+
           icon={<FaWater />}
+
           color="#2563EB"
+
         />
 
 
+
         <DashboardCard
+
           title="Total Jiwa"
+
           value={
             totalJiwa.toLocaleString()
           }
+
           icon={<FaUsers />}
+
           color="#16A34A"
+
         />
 
 
+
         <DashboardCard
+
           title="RW"
-          value={totalRW}
+
+          value={
+            totalRW
+          }
+
           icon={<FaHome />}
+
           color="#F59E0B"
+
         />
 
 
+
         <DashboardCard
+
           title="Kecamatan"
-          value={totalKecamatan}
+
+          value={
+            totalKecamatan
+          }
+
           icon={<FaMapMarkerAlt />}
+
           color="#DC2626"
+
         />
 
 
@@ -139,21 +243,24 @@ function Dashboard() {
 
 
 
-      {/* ================= CHART + MAP ================= */}
-
 
       <div className="chart-grid">
+
 
 
         <div className="chart-card">
 
 
           <Top10Chart
+
             data={banjir}
+
           />
 
 
         </div>
+
+
 
 
 
@@ -161,36 +268,42 @@ function Dashboard() {
 
 
           <MiniMap
+
             data={banjir}
+
           />
 
 
         </div>
 
 
+
       </div>
 
 
 
 
-
-      {/* ================= PIE CHART ================= */}
 
 
       <div className="chart-card mt-4">
 
 
         <RiskDistributionChart
+
           data={banjir}
+
         />
 
 
       </div>
 
 
+
+
     </div>
 
   );
+
 
 }
 

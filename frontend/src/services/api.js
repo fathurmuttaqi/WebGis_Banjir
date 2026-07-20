@@ -1,10 +1,12 @@
 import axios from "axios";
 
-const API = axios.create({
-  baseURL: "https://webgisbanjir-production.up.railway.app/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
+
+const api = axios.create({
+
+    baseURL:
+    "https://webgisbanjir-production.up.railway.app/api"
+
 });
 
-export default API;
+
+export default api;

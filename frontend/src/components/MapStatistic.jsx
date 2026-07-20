@@ -10,27 +10,33 @@ function MapStatistic({ data = [] }) {
     data.forEach((item)=>{
 
 
-        const jiwa = Number(
-            item.jumlah_jiwa_terdampak || 0
+        const pengungsi = Number(
+            item.jumlah_pengungsi || 0
         );
 
 
 
-        if(jiwa > 500){
+        if(pengungsi > 500){
+
 
             tinggi++;
 
+
         }
 
-        else if(jiwa >= 100){
+        else if(pengungsi >= 100){
+
 
             sedang++;
+
 
         }
 
         else{
 
+
             rendah++;
+
 
         }
 
@@ -41,18 +47,24 @@ function MapStatistic({ data = [] }) {
 
 
 
+
     return (
 
         <div className="card shadow">
 
 
+
             <div className="card-header">
+
 
                 <b>
                     Statistik Wilayah
                 </b>
 
+
             </div>
+
+
 
 
 
@@ -74,6 +86,7 @@ function MapStatistic({ data = [] }) {
                 <h5>
                     🟢 {rendah} Wilayah
                 </h5>
+
 
 
             </div>

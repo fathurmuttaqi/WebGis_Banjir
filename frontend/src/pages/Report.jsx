@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 import "../styles/report.css";
 
 
@@ -7,6 +7,8 @@ function Report() {
 
 
   const [data, setData] = useState([]);
+
+  const [loading, setLoading] = useState(true);
 
   const [search, setSearch] = useState("");
 
@@ -16,58 +18,91 @@ function Report() {
 
 
 
+
   useEffect(() => {
 
+    getData();
 
-    axios
-      .get(
-        "https://webgisbanjir-production.up.railway.app/api/banjir"
-      )
-
-      .then((res)=>{
-
-        console.log("DATA REPORT:", res.data);
-
-        setData(res.data.data);
-
-      })
-
-      .catch((err)=>{
-
-        console.log(err);
-
-      });
-
-
-  },[]);
+  }, []);
 
 
 
 
 
-  const getRisiko = (item)=>{
+  const getData = async () => {
+
+    try {
 
 
-    const jiwa =
-      Number(item.jumlah_jiwa_terdampak || 0);
+      const res = await api.get("/banjir");
+
+
+      console.log(
+        "DATA REPORT:",
+        res.data
+      );
+
+
+      setData(
+        res.data.data || []
+      );
+
+
+    } catch (error) {
+
+
+      console.error(
+        "REPORT ERROR:",
+        error
+      );
+
+
+    } finally {
+
+
+      setLoading(false);
+
+
+    }
+
+  };
 
 
 
-    if(jiwa > 500){
+
+
+
+
+  // Risiko berdasarkan jumlah pengungsi
+
+  const getRisiko = (item) => {
+
+
+    const pengungsi = Number(
+      item.jumlah_pengungsi || 0
+    );
+
+
+
+    if (pengungsi > 500) {
 
       return "Tinggi";
 
     }
 
 
-    else if(jiwa >= 100){
+    else if (pengungsi >= 100) {
 
       return "Sedang";
 
     }
 
 
-    return "Rendah";
+    else {
+
+      return "Rendah";
+
+    }
 
 
   };
@@ -77,7 +112,24 @@ function Report() {
 
 
 
-  const filteredData = data.filter((item)=>{
+
+  const daftarKecamatan = [
+
+    ...new Set(
+      data.map(
+        item => item.kecamatan
+      )
+    )
+
+  ];
+
+
+
+
+
+
+
+  const filteredData = data.filter((item) => {
 
 
     const cocokKelurahan =
@@ -123,9 +175,37 @@ function Report() {
 
 
 
+
+
+
+  if (loading) {
+
+
+    return (
+
+      <div className="main">
+
+        <h2>
+          Loading data banjir...
+        </h2>
+
+      </div>
+
+    );
+
+  }
+
+
+
+
+
+
+
   return (
 
+
     <div className="main">
+
 
 
       <div className="title">
@@ -140,6 +220,9 @@ function Report() {
         </p>
 
       </div>
+
+
+
 
 
 
@@ -164,6 +247,9 @@ function Report() {
 
 
 
+
+
+
         <select
 
           value={kecamatan}
@@ -180,26 +266,29 @@ function Report() {
 
 
           {
-            [
-              ...new Set(
-                data.map(
-                  item=>item.kecamatan
-                )
-              )
-            ].map((item)=>(
+
+            daftarKecamatan.map((item)=>(
 
               <option
+
                 key={item}
+
                 value={item}
+
               >
+
                 {item}
+
               </option>
 
             ))
+
           }
 
 
         </select>
+
+
 
 
 
@@ -219,13 +308,16 @@ function Report() {
             Semua Risiko
           </option>
 
+
           <option value="Tinggi">
             Tinggi
           </option>
 
+
           <option value="Sedang">
             Sedang
           </option>
+
 
           <option value="Rendah">
             Rendah
@@ -235,8 +327,9 @@ function Report() {
         </select>
 
 
-
       </div>
+
+
 
 
 
@@ -260,7 +353,7 @@ function Report() {
 
               <th>Kecamatan</th>
 
-              <th>Jumlah Jiwa</th>
+              <th>Jumlah Pengungsi</th>
 
               <th>Tinggi Air</th>
 
@@ -276,10 +369,36 @@ function Report() {
 
 
 
+
           <tbody>
 
 
           {
+
+
+            filteredData.length === 0 ? (
+
+
+              <tr>
+
+                <td
+                  colSpan="6"
+                  style={{
+                    textAlign:"center"
+                  }}
+                >
+
+                  Data tidak ditemukan
+
+                </td>
+
+              </tr>
+
+
+            )
+
+            :
+
 
             filteredData.map((item,index)=>(
 
@@ -288,7 +407,7 @@ function Report() {
 
 
                 <td>
-                  {index+1}
+                  {index + 1}
                 </td>
 
 
@@ -306,20 +425,31 @@ function Report() {
 
 
                 <td>
-                  {item.jumlah_jiwa_terdampak}
+
+                  {Number(
+                    item.jumlah_pengungsi || 0
+                  ).toLocaleString()}
+
                 </td>
 
 
 
                 <td>
+
                   {item.jumlah_rata_rata_ketinggian_air}
+
                 </td>
+
 
 
 
                 <td>
 
-                  {getRisiko(item)}
+                  <b>
+
+                    {getRisiko(item)}
+
+                  </b>
 
                 </td>
 
@@ -330,7 +460,9 @@ function Report() {
 
             ))
 
+
           }
+
 
 
           </tbody>
@@ -340,11 +472,14 @@ function Report() {
         </table>
 
 
+
       </div>
 
 
 
+
     </div>
+
 
   );
 

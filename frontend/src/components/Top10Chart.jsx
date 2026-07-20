@@ -25,37 +25,79 @@ ChartJS.register(
 function Top10Chart({ data = [] }) {
 
 
-  // ============================
-  // Ambil Top 10 Kelurahan
-  // berdasarkan jumlah jiwa
-  // ============================
 
-  const hasil = {};
+  if (!data || data.length === 0) {
+
+    return (
+
+      <div
+        style={{
+          height:"320px",
+          display:"flex",
+          alignItems:"center",
+          justifyContent:"center"
+        }}
+      >
+
+        Data banjir belum tersedia
+
+      </div>
+
+    );
+
+  }
+
+
+
+
+
+  // =============================
+  // TOTAL PENGUNGSI PER KELURAHAN
+  // =============================
+
+
+  const jumlahKelurahan = {};
+
 
 
   data.forEach((item)=>{
 
-    const kelurahan = item.kelurahan;
 
-    const jiwa =
-      Number(item.jumlah_jiwa_terdampak || 0);
+    const kelurahan =
+
+      item.kelurahan || "Tidak diketahui";
 
 
-    if(!hasil[kelurahan]){
 
-      hasil[kelurahan] = 0;
+    const pengungsi =
+
+      Number(
+        item.jumlah_pengungsi || 0
+      );
+
+
+
+    if(!jumlahKelurahan[kelurahan]){
+
+      jumlahKelurahan[kelurahan] = 0;
 
     }
 
 
-    hasil[kelurahan] += jiwa;
+
+    jumlahKelurahan[kelurahan] += pengungsi;
+
 
 
   });
 
 
 
-  const top10 = Object.entries(hasil)
+
+
+
+
+  const top10 = Object.entries(jumlahKelurahan)
 
     .sort((a,b)=>b[1]-a[1])
 
@@ -63,37 +105,53 @@ function Top10Chart({ data = [] }) {
 
 
 
-  const dataChart = {
 
 
-    labels: top10.map(
-      item=>item[0]
-    ),
+
+
+  const chartData = {
+
+
+    labels:
+
+      top10.map(
+        ([nama])=>nama
+      ),
+
 
 
     datasets:[
 
       {
 
-        label:"Jumlah Jiwa Terdampak",
+        label:
+        "Jumlah Pengungsi",
 
 
-        data: top10.map(
-          item=>item[1]
-        ),
+
+        data:
+
+          top10.map(
+            ([,jumlah])=>jumlah
+          ),
+
 
 
         backgroundColor:"#2563EB",
 
 
-        borderRadius:8,
+        borderRadius:6
 
 
       }
 
+
     ]
 
   };
+
+
+
 
 
 
@@ -108,21 +166,60 @@ function Top10Chart({ data = [] }) {
     maintainAspectRatio:false,
 
 
+
     plugins:{
 
 
       legend:{
 
+
         display:false
+
 
       },
 
 
+
       title:{
+
 
         display:true,
 
-        text:"Top 10 Kelurahan Terdampak Banjir"
+
+        text:
+        "Top 10 Kelurahan Berdasarkan Pengungsi"
+
+
+
+      },
+
+
+
+      tooltip:{
+
+
+        callbacks:{
+
+
+          label:(context)=>{
+
+
+            return (
+
+              context.raw.toLocaleString()
+
+              +
+
+              " Pengungsi"
+
+            );
+
+
+          }
+
+
+        }
+
 
       }
 
@@ -130,17 +227,53 @@ function Top10Chart({ data = [] }) {
     },
 
 
+
+
+
     scales:{
+
+
+      x:{
+
+
+        ticks:{
+
+
+          maxRotation:45,
+
+          minRotation:45
+
+
+        }
+
+
+      },
+
 
 
       y:{
 
-        beginAtZero:true
+
+        beginAtZero:true,
+
+
+        title:{
+
+
+          display:true,
+
+
+          text:"Jumlah Pengungsi"
+
+
+        }
+
 
       }
 
 
     }
+
 
 
   };
@@ -149,16 +282,25 @@ function Top10Chart({ data = [] }) {
 
 
 
+
+
+
   return (
 
-    <div style={{
-      height:"320px"
-    }}>
+    <div
+
+      style={{
+
+        height:"320px"
+
+      }}
+
+    >
 
 
       <Bar
 
-        data={dataChart}
+        data={chartData}
 
         options={options}
 
@@ -168,6 +310,7 @@ function Top10Chart({ data = [] }) {
     </div>
 
   );
+
 
 }
 
