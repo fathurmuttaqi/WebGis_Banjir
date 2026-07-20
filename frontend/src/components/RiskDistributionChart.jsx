@@ -1,130 +1,178 @@
 import {
-Chart as ChartJS,
-ArcElement,
-Tooltip,
-Legend
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend
 } from "chart.js";
 
-import {Pie} from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 
-import axios from "axios";
-
-import {useEffect,useState} from "react";
 
 ChartJS.register(
-ArcElement,
-Tooltip,
-Legend
+  ArcElement,
+  Tooltip,
+  Legend
 );
 
-function RiskDistributionChart(){
 
-const [chart,setChart]=useState();
 
-useEffect(()=>{
+function RiskDistributionChart({ data = [] }) {
 
-loadData();
 
-},[]);
+  let rendah = 0;
+  let sedang = 0;
+  let tinggi = 0;
 
-const loadData=async()=>{
 
-const res=await axios.get(
-"http://localhost:5000/api/banjir"
-);
 
-let rendah=0;
-let sedang=0;
-let tinggi=0;
+  data.forEach((item)=>{
 
-res.data.data.forEach(item=>{
 
-const jiwa=
-Number(item.jumlah_jiwa_terdampak);
+    const jiwa = Number(
+      item.jumlah_jiwa_terdampak || 0
+    );
 
-if(jiwa>500){
 
-tinggi++;
+    if(jiwa > 500){
 
-}
+      tinggi++;
 
-else if(jiwa>=100){
+    }
 
-sedang++;
+    else if(jiwa >= 100){
 
-}
+      sedang++;
 
-else{
+    }
 
-rendah++;
+    else{
 
-}
+      rendah++;
 
-});
+    }
 
-setChart({
 
-labels:[
+  });
 
-"Risiko Rendah",
 
-"Risiko Sedang",
 
-"Risiko Tinggi"
+  const chart = {
 
-],
 
-datasets:[{
+    labels:[
 
-data:[
+      "Risiko Rendah",
 
-rendah,
-sedang,
-tinggi
+      "Risiko Sedang",
 
-],
+      "Risiko Tinggi"
 
-backgroundColor:[
+    ],
 
-"#22c55e",
 
-"#facc15",
 
-"#ef4444"
+    datasets:[
 
-]
+      {
 
-}]
+        label:"Distribusi Risiko Banjir",
 
-});
 
-}
+        data:[
 
-if (!chart) return null;
+          rendah,
 
-return (
-  <div
-    style={{
-      width: "420px",
-      height: "420px",
-      margin: "20px auto",
-    }}
-  >
-    <Pie
-      data={chart}
-      options={{
-        responsive: true,
-        maintainAspectRatio: true,
-        plugins: {
-          legend: {
-            position: "top",
-          },
-        },
+          sedang,
+
+          tinggi
+
+        ],
+
+
+        backgroundColor:[
+
+          "#22c55e",
+
+          "#facc15",
+
+          "#ef4444"
+
+        ],
+
+
+        borderWidth:1
+
+      }
+
+    ]
+
+  };
+
+
+
+
+
+  return (
+
+    <div
+
+      style={{
+
+        width:"350px",
+
+        height:"350px",
+
+        margin:"20px auto"
+
       }}
-    />
-  </div>
-);
+
+    >
+
+
+      <Pie
+
+        data={chart}
+
+
+        options={{
+
+          responsive:true,
+
+
+          maintainAspectRatio:false,
+
+
+          plugins:{
+
+
+            legend:{
+
+              position:"top"
+
+            },
+
+
+            title:{
+
+              display:true,
+
+              text:"Distribusi Risiko Banjir"
+
+            }
+
+          }
+
+        }}
+
+      />
+
+
+    </div>
+
+  );
+
 
 }
+
 
 export default RiskDistributionChart;

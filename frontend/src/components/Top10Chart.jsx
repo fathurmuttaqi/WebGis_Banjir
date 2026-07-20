@@ -9,8 +9,7 @@ import {
 } from "chart.js";
 
 import { Bar } from "react-chartjs-2";
-import axios from "axios";
-import { useEffect, useState } from "react";
+
 
 ChartJS.register(
   CategoryScale,
@@ -21,56 +20,157 @@ ChartJS.register(
   Legend
 );
 
-function Top10Chart() {
-  const [dataChart, setDataChart] = useState({
-    labels: [],
-    datasets: [],
+
+
+function Top10Chart({ data = [] }) {
+
+
+  // ============================
+  // Ambil Top 10 Kelurahan
+  // berdasarkan jumlah jiwa
+  // ============================
+
+  const hasil = {};
+
+
+  data.forEach((item)=>{
+
+    const kelurahan = item.kelurahan;
+
+    const jiwa =
+      Number(item.jumlah_jiwa_terdampak || 0);
+
+
+    if(!hasil[kelurahan]){
+
+      hasil[kelurahan] = 0;
+
+    }
+
+
+    hasil[kelurahan] += jiwa;
+
+
   });
 
-  useEffect(() => {
-    getTop10();
-  }, []);
 
-  const getTop10 = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5000/api/banjir/top10"
-      );
 
-      const data = response.data.data;
-      console.log(data);
+  const top10 = Object.entries(hasil)
 
-      setDataChart({
-        labels: data.map((item) => item.kelurahan),
-        datasets: [
-          {
-            label: "Jumlah Jiwa Terdampak",
-            data: data.map((item) => Number(item.total_jiwa)),
-            backgroundColor: "#2563EB",
-            borderRadius: 8,
-          },
-        ],
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    .sort((a,b)=>b[1]-a[1])
+
+    .slice(0,10);
+
+
+
+  const dataChart = {
+
+
+    labels: top10.map(
+      item=>item[0]
+    ),
+
+
+    datasets:[
+
+      {
+
+        label:"Jumlah Jiwa Terdampak",
+
+
+        data: top10.map(
+          item=>item[1]
+        ),
+
+
+        backgroundColor:"#2563EB",
+
+
+        borderRadius:8,
+
+
+      }
+
+    ]
+
   };
+
+
+
+
 
   const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
+
+
+    responsive:true,
+
+
+    maintainAspectRatio:false,
+
+
+    plugins:{
+
+
+      legend:{
+
+        display:false
+
       },
+
+
+      title:{
+
+        display:true,
+
+        text:"Top 10 Kelurahan Terdampak Banjir"
+
+      }
+
+
     },
+
+
+    scales:{
+
+
+      y:{
+
+        beginAtZero:true
+
+      }
+
+
+    }
+
+
   };
 
+
+
+
+
   return (
-    <div style={{ height: "320px" }}>
-      <Bar data={dataChart} options={options} />
+
+    <div style={{
+      height:"320px"
+    }}>
+
+
+      <Bar
+
+        data={dataChart}
+
+        options={options}
+
+      />
+
+
     </div>
+
   );
+
 }
+
+
 
 export default Top10Chart;
