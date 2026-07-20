@@ -5,28 +5,38 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 import "../styles/login.css";
 
 
-function Login() {
+function Login({ setIsLogin }) {
+
 
   const navigate = useNavigate();
 
 
   const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
+
+
 
 
 
   const handleLogin = async (e) => {
 
+
     e.preventDefault();
+
 
 
     if (!email || !password) {
 
       alert("Email dan password wajib diisi.");
+
       return;
 
     }
+
+
 
 
 
@@ -50,18 +60,22 @@ function Login() {
 
 
 
+
+
       if(response.data.success){
 
 
 
+        // simpan user
+
         localStorage.setItem(
           "user",
-          JSON.stringify(
-            response.data.user
-          )
+          JSON.stringify(response.data.user)
         );
 
 
+
+        // simpan token jika ada
 
         if(response.data.token){
 
@@ -74,7 +88,20 @@ function Login() {
 
 
 
-        // redirect dashboard
+
+        // update status login App.jsx
+
+        if(setIsLogin){
+
+          setIsLogin(true);
+
+        }
+
+
+
+
+
+        // arahkan ke dashboard
 
         navigate(
           "/dashboard",
@@ -85,7 +112,10 @@ function Login() {
 
 
 
-      }else{
+
+      }
+
+      else{
 
 
         alert(
@@ -98,8 +128,10 @@ function Login() {
 
 
 
-    }catch(error){
 
+    }
+
+    catch(error){
 
 
       console.error(
@@ -113,7 +145,7 @@ function Login() {
 
         error.response?.data?.message ||
 
-        "Login gagal, server tidak dapat diakses."
+        "Login gagal"
 
       );
 
@@ -122,6 +154,8 @@ function Login() {
 
 
   };
+
+
 
 
 
@@ -138,6 +172,7 @@ function Login() {
         <h2>
           Login WebGIS
         </h2>
+
 
 
 
@@ -160,6 +195,8 @@ function Login() {
 
 
 
+
+
           <div className="password-group">
 
 
@@ -167,8 +204,10 @@ function Login() {
 
               type={
                 showPassword
-                ? "text"
-                : "password"
+                ?
+                "text"
+                :
+                "password"
               }
 
 
@@ -182,7 +221,6 @@ function Login() {
                 setPassword(e.target.value)
               }
 
-
             />
 
 
@@ -194,9 +232,7 @@ function Login() {
               className="eye-btn"
 
               onClick={()=>
-                setShowPassword(
-                  !showPassword
-                )
+                setShowPassword(!showPassword)
               }
 
             >
@@ -204,15 +240,10 @@ function Login() {
 
               {
                 showPassword
-
                 ?
-
                 <FiEyeOff/>
-
                 :
-
                 <FiEye/>
-
               }
 
 
@@ -220,6 +251,7 @@ function Login() {
 
 
           </div>
+
 
 
 
@@ -247,14 +279,10 @@ function Login() {
 
         <p className="login-link">
 
-
           Belum punya akun?
 
-
           <Link to="/register">
-
             {" "}Daftar
-
           </Link>
 
 

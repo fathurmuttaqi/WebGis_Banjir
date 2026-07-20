@@ -5,6 +5,8 @@ import {
   Navigate 
 } from "react-router-dom";
 
+import { useState, useEffect } from "react";
+
 import Dashboard from "./pages/Dashboard";
 import Map from "./pages/Map";
 import Report from "./pages/Report";
@@ -17,103 +19,208 @@ import MainLayout from "./layouts/MainLayout";
 
 function App() {
 
-  const isLogin = !!localStorage.getItem("user");
+
+  const [isLogin, setIsLogin] = useState(false);
+
+
+
+  // cek login ketika aplikasi dibuka
+
+  useEffect(()=>{
+
+
+    const user = localStorage.getItem("user");
+
+
+    if(user){
+
+      setIsLogin(true);
+
+    }
+
+
+  },[]);
+
+
+
 
 
   return (
 
     <BrowserRouter>
 
+
       <Routes>
 
 
-        {/* PUBLIC PAGE */}
 
-        <Route 
-          path="/login" 
-          element={<Login />} 
-        />
+        {/* PUBLIC */}
 
-
-        <Route 
-          path="/register" 
-          element={<Register />} 
-        />
-
-
-
-        {/* PRIVATE PAGE */}
 
         <Route
 
+          path="/login"
+
           element={
-            isLogin 
-            ? <MainLayout /> 
-            : <Navigate to="/login" replace />
+
+            isLogin
+
+            ?
+
+            <Navigate 
+              to="/dashboard"
+              replace
+            />
+
+            :
+
+            <Login 
+              setIsLogin={setIsLogin}
+            />
+
           }
+
+        />
+
+
+
+
+        <Route
+
+          path="/register"
+
+          element={<Register />}
+
+        />
+
+
+
+
+
+
+
+        {/* PRIVATE */}
+
+
+        <Route
+
+
+          element={
+
+            isLogin
+
+            ?
+
+            <MainLayout />
+
+            :
+
+            <Navigate 
+              to="/login"
+              replace
+            />
+
+          }
+
 
         >
 
 
-          {/* Dashboard */}
-
-          <Route 
-            path="/" 
-            element={<Dashboard />} 
-          />
 
 
-          <Route 
-            path="/dashboard" 
-            element={<Dashboard />} 
-          />
+          <Route
 
+            path="/"
 
+            element={<Dashboard />}
 
-          {/* Map */}
-
-          <Route 
-            path="/map" 
-            element={<Map />} 
           />
 
 
 
-          {/* Report */}
 
-          <Route 
-            path="/report" 
-            element={<Report />} 
+          <Route
+
+            path="/dashboard"
+
+            element={<Dashboard />}
+
           />
 
 
 
-          {/* Settings */}
 
-          <Route 
-            path="/settings" 
-            element={<Settings />} 
+          <Route
+
+            path="/map"
+
+            element={<Map />}
+
           />
+
+
+
+
+          <Route
+
+            path="/report"
+
+            element={<Report />}
+
+          />
+
+
+
+
+          <Route
+
+            path="/settings"
+
+            element={<Settings />}
+
+          />
+
+
 
 
         </Route>
 
 
 
-        {/* Jika URL tidak ditemukan */}
+
+
+
+
+        {/* HANDLE URL SALAH */}
+
 
         <Route
 
+
           path="*"
 
+
           element={
-            <Navigate 
-              to="/" 
-              replace 
+
+            <Navigate
+
+              to={
+                isLogin
+                ?
+                "/dashboard"
+                :
+                "/login"
+              }
+
+              replace
+
             />
+
           }
 
+
         />
+
 
 
       </Routes>
