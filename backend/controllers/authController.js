@@ -171,3 +171,12 @@ const login = async (req, res) => {
     }
 
 };
+
+// ==============================
+// EXPORT CONTROLLER
+// ==============================
+
+module.exports = {
+    register,
+    login
+};
