@@ -3,17 +3,57 @@ import {
   TileLayer,
   CircleMarker,
   Popup,
+  useMap
 } from "react-leaflet";
 
+import { useEffect } from "react";
+
 import "leaflet/dist/leaflet.css";
+
+
+
+// memperbaiki render ukuran leaflet
+
+function ResizeMap(){
+
+  const map = useMap();
+
+
+  useEffect(()=>{
+
+    setTimeout(()=>{
+
+      map.invalidateSize();
+
+    },300);
+
+
+  },[map]);
+
+
+  return null;
+
+}
+
+
+
 
 
 function FullMap({ data = [], setSelectedLocation }) {
 
 
+  console.log(
+    "FULL MAP DATA:",
+    data
+  );
+
+
+
   return (
 
+
     <div className="card shadow">
+
 
 
       <div className="card-header">
@@ -26,35 +66,59 @@ function FullMap({ data = [], setSelectedLocation }) {
 
 
 
+
+
       <div className="card-body p-0">
+
 
 
         <MapContainer
 
+
           center={[
+
             -6.2088,
+
             106.8456
+
           ]}
+
 
           zoom={11}
 
 
+
           style={{
+
             height:"calc(100vh - 150px)",
+
             width:"100%"
+
           }}
+
 
         >
 
 
 
+          <ResizeMap />
+
+
+
+
+
           <TileLayer
+
 
             attribution="&copy; OpenStreetMap"
 
+
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
+
           />
+
+
 
 
 
@@ -65,9 +129,15 @@ function FullMap({ data = [], setSelectedLocation }) {
             data.map((item,index)=>{
 
 
-              const lat = Number(item.Latitude);
+              const lat = Number(
+                item.Latitude
+              );
 
-              const lng = Number(item.Longitude);
+
+              const lng = Number(
+                item.Longitude
+              );
+
 
 
 
@@ -82,42 +152,58 @@ function FullMap({ data = [], setSelectedLocation }) {
 
 
 
-              const jiwa =
-                Number(item.jumlah_jiwa_terdampak || 0);
+
+
+              // pakai jumlah pengungsi
+
+              const pengungsi = Number(
+                item.jumlah_pengungsi || 0
+              );
+
+
 
 
 
               let warna = "green";
 
-              let radius = 6;
+              let radius = 7;
 
-              let status = "Risiko Rendah";
+              let status =
+                "Risiko Rendah";
 
 
 
 
-              if(jiwa > 500){
 
-                warna="red";
+              if(pengungsi > 500){
 
-                radius=14;
 
-                status="Risiko Tinggi";
+                warna = "red";
+
+                radius = 14;
+
+                status =
+                  "Risiko Tinggi";
+
+
+              }
+
+
+              else if(pengungsi >=100){
+
+
+                warna = "orange";
+
+                radius = 10;
+
+                status =
+                  "Risiko Sedang";
+
 
               }
 
 
-              else if(jiwa >=100){
 
-
-                warna="orange";
-
-                radius=10;
-
-                status="Risiko Sedang";
-
-
-              }
 
 
 
@@ -125,10 +211,14 @@ function FullMap({ data = [], setSelectedLocation }) {
 
               return (
 
+
+
                 <CircleMarker
 
 
-                  key={index}
+
+                  key={item.id || index}
+
 
 
                   center={[
@@ -140,7 +230,9 @@ function FullMap({ data = [], setSelectedLocation }) {
                   ]}
 
 
+
                   radius={radius}
+
 
 
                   pathOptions={{
@@ -152,10 +244,11 @@ function FullMap({ data = [], setSelectedLocation }) {
                     fillColor:warna,
 
 
-                    fillOpacity:0.9
+                    fillOpacity:0.85
 
 
                   }}
+
 
 
 
@@ -178,7 +271,10 @@ function FullMap({ data = [], setSelectedLocation }) {
                   }}
 
 
+
                 >
+
+
 
 
 
@@ -192,27 +288,27 @@ function FullMap({ data = [], setSelectedLocation }) {
                     </h6>
 
 
+
                     <hr />
+
+
 
 
 
                     <p>
 
-                      👥
+                      👥 Pengungsi :
 
                       {" "}
 
                       <b>
 
-                        {jiwa}
+                        {pengungsi.toLocaleString()}
 
                       </b>
 
-                      {" "}
-
-                      Jiwa
-
                     </p>
+
 
 
 
@@ -230,6 +326,8 @@ function FullMap({ data = [], setSelectedLocation }) {
 
 
 
+
+
                     <p>
 
                       🌊 Tinggi Air :
@@ -243,6 +341,7 @@ function FullMap({ data = [], setSelectedLocation }) {
 
 
 
+
                     <p>
 
                       Status :
@@ -251,11 +350,9 @@ function FullMap({ data = [], setSelectedLocation }) {
 
 
                       <b
-
                         style={{
                           color:warna
                         }}
-
                       >
 
                         {status}
@@ -267,11 +364,14 @@ function FullMap({ data = [], setSelectedLocation }) {
 
 
 
+
                   </Popup>
 
 
 
+
                 </CircleMarker>
+
 
 
               );
@@ -279,7 +379,10 @@ function FullMap({ data = [], setSelectedLocation }) {
 
             })
 
+
           }
+
+
 
 
 
@@ -288,14 +391,18 @@ function FullMap({ data = [], setSelectedLocation }) {
 
 
 
+
       </div>
+
 
 
 
     </div>
 
 
+
   );
+
 
 }
 
