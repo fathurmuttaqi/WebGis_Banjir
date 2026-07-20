@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import api from "../api";
+import api from "../services/api";
 
 import DashboardCard from "../components/DashboardCard";
 import Top10Chart from "../components/Top10Chart";

@@ -4,7 +4,7 @@ import MapStatistic from "../components/MapStatistic";
 import InfoPanel from "../components/InfoPanel";
 
 import { useEffect, useState } from "react";
-import api from "../api";
+import api from "../services/api";
 
 import "../styles/map.css";
 
