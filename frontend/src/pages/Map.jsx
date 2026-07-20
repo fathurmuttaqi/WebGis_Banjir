@@ -12,30 +12,27 @@ import "../styles/map.css";
 function Map() {
 
 
-  const [banjir, setBanjir] = useState([]);
+  const [banjir,setBanjir] = useState([]);
 
-  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedLocation,setSelectedLocation] = useState(null);
 
-  const [loading, setLoading] = useState(true);
-
-
+  const [loading,setLoading] = useState(true);
 
 
 
-  useEffect(() => {
+  useEffect(()=>{
 
     fetchBanjir();
 
-  }, []);
+  },[]);
 
 
 
 
+  const fetchBanjir = async()=>{
 
-  const fetchBanjir = async () => {
 
-
-    try {
+    try{
 
 
       const response = await api.get("/banjir");
@@ -49,13 +46,23 @@ function Map() {
 
 
 
-      setBanjir(
-        response.data.data || []
+      const data =
+        response.data?.data || [];
+
+
+
+      console.log(
+        "TOTAL DATA MAP:",
+        data.length
       );
 
 
 
-    } catch(error) {
+      setBanjir(data);
+
+
+
+    }catch(error){
 
 
       console.error(
@@ -64,7 +71,7 @@ function Map() {
       );
 
 
-    } finally {
+    }finally{
 
 
       setLoading(false);
@@ -103,13 +110,10 @@ function Map() {
 
 
 
+
   return (
 
-
     <div className="main">
-
-
-
 
 
       <div className="title">
@@ -118,7 +122,6 @@ function Map() {
         <h1>
           Peta Daerah Rawan Banjir
         </h1>
-
 
 
         <p>
@@ -132,18 +135,11 @@ function Map() {
 
 
 
-
-
-
       <div className="map-layout">
 
 
 
-
-
-
         <div className="map-container">
-
 
 
           <FullMap
@@ -160,10 +156,7 @@ function Map() {
           />
 
 
-
         </div>
-
-
 
 
 
@@ -174,18 +167,11 @@ function Map() {
 
 
 
-
-
           <InfoPanel
-
 
             data={selectedLocation}
 
-
           />
-
-
-
 
 
 
@@ -193,20 +179,11 @@ function Map() {
 
 
 
-
-
-
-
-
           <MapStatistic
-
 
             data={banjir}
 
-
           />
-
-
 
 
 
@@ -214,20 +191,13 @@ function Map() {
 
 
 
-
-
       </div>
-
-
-
 
 
 
     </div>
 
-
   );
-
 
 }
 

@@ -6,24 +6,16 @@ import {
   useMap
 } from "react-leaflet";
 
-import {
-  useEffect
-} from "react";
-
+import { useEffect } from "react";
 import "leaflet/dist/leaflet.css";
 
 
-
-
-// Refresh ukuran leaflet
-
+// Refresh ukuran map
 function ResizeMap(){
 
   const map = useMap();
 
-
   useEffect(()=>{
-
 
     setTimeout(()=>{
 
@@ -41,24 +33,17 @@ function ResizeMap(){
 
 
 
-
-
-// Fokus ke data banjir
-
+// Zoom otomatis berdasarkan data
 function FitBounds({data}){
-
 
   const map = useMap();
 
 
-
   useEffect(()=>{
-
 
     if(data.length > 0){
 
-
-      const validData = data.filter(item=>
+      const valid = data.filter(item=>
 
         item.Latitude &&
         item.Longitude
@@ -66,32 +51,33 @@ function FitBounds({data}){
       );
 
 
+      if(valid.length > 0){
 
-      if(validData.length > 0){
+
+        const lat =
+          Number(valid[0].Latitude);
+
+
+        const lng =
+          Number(valid[0].Longitude);
+
 
 
         map.setView(
-
           [
-            Number(validData[0].Latitude),
-            Number(validData[0].Longitude)
-
+            lat,
+            lng
           ],
-
-          11
-
+          12
         );
 
 
       }
 
-
     }
 
 
-
   },[data,map]);
-
 
 
   return null;
@@ -101,400 +87,273 @@ function FitBounds({data}){
 
 
 
-
-
-
 function FullMap({
-  data = [],
+  data=[],
   setSelectedLocation
-}) {
+}){
 
 
+  console.log(
+    "FULLMAP DATA:",
+    data.length
+  );
 
-console.log(
-  "FULLMAP DATA:",
-  data
-);
 
 
+  return (
 
+    <div className="card shadow">
 
 
-return (
+      <div className="card-header">
 
+        <b>
+          Peta Daerah Rawan Banjir
+        </b>
 
+      </div>
 
-<div className="card shadow">
 
 
+      <div className="card-body p-0">
 
 
 
-<div className="card-header">
+      <MapContainer
 
-<b>
-Peta Daerah Rawan Banjir
-</b>
 
+        center={[
+          -6.2088,
+          106.8456
+        ]}
 
-</div>
 
+        zoom={11}
 
 
+        style={{
+          height:"calc(100vh - 150px)",
+          width:"100%"
+        }}
 
 
+      >
 
 
-<div className="card-body p-0">
 
+        <ResizeMap/>
 
 
+        <FitBounds data={data}/>
 
 
-<MapContainer
 
 
+        <TileLayer
 
-key={data.length}
+          attribution="&copy; OpenStreetMap"
 
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
 
+        />
 
-center={[
 
--6.2088,
 
-106.8456
 
-]}
 
+        {
+          data.map((item)=>{
 
 
-zoom={11}
+            const lat =
+            parseFloat(item.Latitude);
 
 
 
-style={{
+            const lng =
+            parseFloat(item.Longitude);
 
-height:"calc(100vh - 150px)",
 
-width:"100%"
 
-}}
 
+            if(
+              Number.isNaN(lat) ||
+              Number.isNaN(lng)
+            ){
 
+              return null;
 
->
+            }
 
 
 
-<ResizeMap />
 
+            const pengungsi =
+            Number(
+              item.jumlah_pengungsi || 0
+            );
 
 
-<FitBounds data={data}/>
 
 
+            let warna="green";
 
+            let status="Risiko Rendah";
 
+            let radius=8;
 
 
-<TileLayer
 
 
-attribution="&copy; OpenStreetMap"
+            if(pengungsi > 500){
 
+              warna="red";
 
-url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              status="Risiko Tinggi";
 
+              radius=14;
 
-/>
 
+            }
+            else if(pengungsi >=100){
 
+              warna="orange";
 
+              status="Risiko Sedang";
 
+              radius=11;
 
+            }
 
 
 
 
-{
 
-data.map((item,index)=>{
+            return (
 
 
-const lat =
-Number(item.Latitude);
+            <CircleMarker
 
 
+              key={item.id}
 
-const lng =
-Number(item.Longitude);
 
+              center={[
+                lat,
+                lng
+              ]}
 
 
+              radius={radius}
 
 
-if(
+              pathOptions={{
 
-isNaN(lat) ||
+                color:warna,
 
-isNaN(lng)
+                fillColor:warna,
 
-){
+                fillOpacity:0.9
 
-return null;
+              }}
+
+
+
+              eventHandlers={{
+
+                click:()=>{
+
+                  if(setSelectedLocation){
+
+                    setSelectedLocation(item);
+
+                  }
+
+                }
+
+              }}
+
+
+
+            >
+
+
+
+              <Popup>
+
+
+                <b>
+                  {item.kelurahan}
+                </b>
+
+
+                <br/>
+
+
+                Kecamatan :
+                {" "}
+                {item.kecamatan}
+
+
+                <br/>
+
+
+                Pengungsi :
+                {" "}
+                {pengungsi.toLocaleString()}
+
+
+                <br/>
+
+
+                Tinggi Air :
+                {" "}
+                {item.jumlah_rata_rata_ketinggian_air}
+
+
+
+                <br/>
+
+
+                Status :
+                {" "}
+                <b style={{
+                  color:warna
+                }}>
+
+                {status}
+
+                </b>
+
+
+
+              </Popup>
+
+
+
+            </CircleMarker>
+
+
+            )
+
+
+          })
+
+        }
+
+
+
+      </MapContainer>
+
+
+      </div>
+
+
+    </div>
+
+  );
 
 }
-
-
-
-
-
-
-const pengungsi =
-Number(
-item.jumlah_pengungsi || 0
-);
-
-
-
-
-
-
-let warna="green";
-
-let radius=7;
-
-let status="Risiko Rendah";
-
-
-
-
-
-if(pengungsi > 500){
-
-
-warna="red";
-
-radius=14;
-
-status="Risiko Tinggi";
-
-
-}
-
-else if(pengungsi >=100){
-
-
-warna="orange";
-
-radius=10;
-
-status="Risiko Sedang";
-
-
-}
-
-
-
-
-
-
-
-return(
-
-
-
-<CircleMarker
-
-
-
-key={item.id || index}
-
-
-
-center={[
-
-lat,
-
-lng
-
-]}
-
-
-
-radius={radius}
-
-
-
-pathOptions={{
-
-
-color:warna,
-
-
-fillColor:warna,
-
-
-fillOpacity:0.8
-
-
-}}
-
-
-
-
-eventHandlers={{
-
-
-click:()=>{
-
-
-if(setSelectedLocation){
-
-setSelectedLocation(item);
-
-}
-
-
-}
-
-
-}}
-
-
-
->
-
-
-
-
-
-<Popup>
-
-
-<h4>
-
-{item.kelurahan}
-
-</h4>
-
-
-
-<p>
-
-📍 Kecamatan :
-
-{ " " }
-
-{item.kecamatan}
-
-</p>
-
-
-
-
-<p>
-
-👥 Jumlah Pengungsi :
-
-<br/>
-
-<b>
-
-{pengungsi.toLocaleString()}
-
-</b>
-
-</p>
-
-
-
-
-
-<p>
-
-🌊 Tinggi Air :
-
-<br/>
-
-{item.jumlah_rata_rata_ketinggian_air}
-
-</p>
-
-
-
-
-
-<p>
-
-Status :
-
-{" "}
-
-<b
-style={{
-color:warna
-}}
->
-
-{status}
-
-</b>
-
-
-</p>
-
-
-
-</Popup>
-
-
-
-
-
-</CircleMarker>
-
-
-
-);
-
-
-
-})
-
-
-}
-
-
-
-
-
-
-
-</MapContainer>
-
-
-
-
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-
-);
-
-
-}
-
 
 
 export default FullMap;
