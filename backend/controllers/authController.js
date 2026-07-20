@@ -76,69 +76,98 @@ LOGIN
 ====================================
 */
 
-const login = (req, res) => {
+const login = async (req, res) => {
 
-    const { email, password } = req.body;
+    try {
 
-    userModel.getUserByEmail(email, async (err, result) => {
+        const { email, password } = req.body;
 
-        if (err) {
-            return res.status(500).json({
-                success: false,
-                message: err.message
-            });
-        }
 
-        if (result.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "Email tidak ditemukan"
-            });
-        }
+        userModel.getUserByEmail(email, async (err, result) => {
 
-        const user = result[0];
 
-        const isMatch = await bcrypt.compare(password, user.password);
+            if (err) {
+                console.log("DATABASE ERROR:", err);
 
-        if (!isMatch) {
-
-            return res.status(401).json({
-                success: false,
-                message: "Password salah"
-            });
-
-        }
-
-        const token = jwt.sign(
-            {
-                id: user.id,
-                nama: user.nama,
-                email: user.email,
-                role: user.role
-            },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: "1d"
+                return res.status(500).json({
+                    success:false,
+                    message:err.message
+                });
             }
-        );
 
-        res.json({
-            success: true,
-            message: "Login berhasil",
-            token,
-            user: {
-                id: user.id,
-                nama: user.nama,
-                email: user.email,
-                role: user.role
+
+            if (result.length === 0) {
+
+                return res.status(404).json({
+                    success:false,
+                    message:"Email tidak ditemukan"
+                });
+
             }
+
+
+            const user = result[0];
+
+
+            const isMatch = await bcrypt.compare(
+                password,
+                user.password
+            );
+
+
+            if(!isMatch){
+
+                return res.status(401).json({
+                    success:false,
+                    message:"Password salah"
+                });
+
+            }
+
+
+            const token = jwt.sign(
+                {
+                    id:user.id,
+                    nama:user.nama,
+                    email:user.email,
+                    role:user.role
+                },
+                process.env.JWT_SECRET,
+                {
+                    expiresIn:"1d"
+                }
+            );
+
+
+            return res.json({
+
+                success:true,
+                message:"Login berhasil",
+
+                token,
+
+                user:{
+                    id:user.id,
+                    nama:user.nama,
+                    email:user.email,
+                    role:user.role
+                }
+
+            });
+
+
         });
 
-    });
 
-};
+    } catch(error){
 
-module.exports = {
-    register,
-    login
+        console.log("LOGIN ERROR:",error);
+
+        res.status(500).json({
+            success:false,
+            message:error.message
+        });
+
+    }
+
 };
