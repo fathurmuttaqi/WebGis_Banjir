@@ -11,9 +11,7 @@ function Login() {
 
 
   const [email, setEmail] = useState("");
-
   const [password, setPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
 
 
@@ -26,7 +24,6 @@ function Login() {
     if (!email || !password) {
 
       alert("Email dan password wajib diisi.");
-
       return;
 
     }
@@ -36,11 +33,11 @@ function Login() {
     try {
 
 
-      const res = await API.post(
+      const response = await API.post(
         "/auth/login",
         {
           email,
-          password,
+          password
         }
       );
 
@@ -48,43 +45,52 @@ function Login() {
 
       console.log(
         "LOGIN RESPONSE:",
-        res.data
+        response.data
       );
 
 
 
-      if (res.data.success) {
+      if(response.data.success){
+
 
 
         localStorage.setItem(
           "user",
-          JSON.stringify(res.data.user)
+          JSON.stringify(
+            response.data.user
+          )
         );
 
 
 
-        localStorage.setItem(
-          "token",
-          res.data.token
+        if(response.data.token){
+
+          localStorage.setItem(
+            "token",
+            response.data.token
+          );
+
+        }
+
+
+
+        // redirect dashboard
+
+        navigate(
+          "/dashboard",
+          {
+            replace:true
+          }
         );
 
 
 
-        alert("Login berhasil");
-
-
-
-        // pindah ke dashboard
-        navigate("/dashboard");
-
-
-
-      } else {
+      }else{
 
 
         alert(
-          res.data.message ||
-          "Login gagal"
+          response.data.message ||
+          "Email atau password salah"
         );
 
 
@@ -92,7 +98,8 @@ function Login() {
 
 
 
-    } catch (error) {
+    }catch(error){
+
 
 
       console.error(
@@ -106,12 +113,13 @@ function Login() {
 
         error.response?.data?.message ||
 
-        "Server tidak dapat diakses."
+        "Login gagal, server tidak dapat diakses."
 
       );
 
 
     }
+
 
   };
 
@@ -119,6 +127,7 @@ function Login() {
 
 
   return (
+
 
     <div className="login-container">
 
@@ -132,9 +141,7 @@ function Login() {
 
 
 
-
         <form onSubmit={handleLogin}>
-
 
 
           <input
@@ -150,8 +157,6 @@ function Login() {
             }
 
           />
-
-
 
 
 
@@ -188,28 +193,30 @@ function Login() {
 
               className="eye-btn"
 
-
               onClick={()=>
                 setShowPassword(
                   !showPassword
                 )
               }
 
-
             >
 
 
               {
                 showPassword
+
                 ?
+
                 <FiEyeOff/>
+
                 :
+
                 <FiEye/>
+
               }
 
 
             </button>
-
 
 
           </div>
@@ -229,7 +236,6 @@ function Login() {
             Login
 
           </button>
-
 
 
 
@@ -256,13 +262,14 @@ function Login() {
 
 
 
-
       </div>
 
 
     </div>
 
+
   );
+
 
 }
 
