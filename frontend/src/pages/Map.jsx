@@ -2,50 +2,146 @@ import FullMap from "../components/FullMap";
 import MapLegend from "../components/MapLegend";
 import MapStatistic from "../components/MapStatistic";
 import InfoPanel from "../components/InfoPanel";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
+import api from "../api";
+
 import "../styles/map.css";
+
 
 function Map() {
 
+
+  const [banjir, setBanjir] = useState([]);
+
   const [selectedLocation, setSelectedLocation] = useState(null);
+
+
+
+  useEffect(() => {
+
+    getData();
+
+  }, []);
+
+
+
+  const getData = async () => {
+
+    try {
+
+
+      const response = await api.get("/banjir");
+
+
+      console.log(
+        "DATA MAP:",
+        response.data
+      );
+
+
+      setBanjir(
+        response.data.data || []
+      );
+
+
+    } catch(error) {
+
+
+      console.log(
+        "MAP ERROR:",
+        error
+      );
+
+
+    }
+
+  };
+
+
+
 
   return (
 
     <div className="main">
 
+
       <div className="title">
-        <h1>Peta Daerah Rawan Banjir</h1>
-        <p>Monitoring Daerah Rawan Banjir Jakarta</p>
+
+        <h1>
+          Peta Daerah Rawan Banjir
+        </h1>
+
+        <p>
+          Monitoring Daerah Rawan Banjir Jakarta
+        </p>
+
       </div>
+
+
+
 
       <div className="map-layout">
 
+
+
         <div className="map-container">
 
+
           <FullMap
-            setSelectedLocation={setSelectedLocation}
+
+            data={banjir}
+
+            setSelectedLocation={
+              setSelectedLocation
+            }
+
           />
 
+
         </div>
+
+
+
+
 
         <div className="map-sidebar">
 
+
+
           <InfoPanel
+
             data={selectedLocation}
+
           />
+
+
 
           <MapLegend />
 
-          <MapStatistic />
+
+
+          <MapStatistic
+
+            data={banjir}
+
+          />
+
+
 
         </div>
 
+
+
       </div>
+
+
 
     </div>
 
   );
 
 }
+
 
 export default Map;
