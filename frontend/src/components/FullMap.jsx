@@ -6,13 +6,16 @@ import {
   useMap
 } from "react-leaflet";
 
-import { useEffect } from "react";
+import {
+  useEffect
+} from "react";
 
 import "leaflet/dist/leaflet.css";
 
 
 
-// memperbaiki render ukuran leaflet
+
+// Refresh ukuran leaflet
 
 function ResizeMap(){
 
@@ -21,11 +24,12 @@ function ResizeMap(){
 
   useEffect(()=>{
 
+
     setTimeout(()=>{
 
       map.invalidateSize();
 
-    },300);
+    },500);
 
 
   },[map]);
@@ -39,369 +43,454 @@ function ResizeMap(){
 
 
 
-function FullMap({ data = [], setSelectedLocation }) {
+// Fokus ke data banjir
 
+function FitBounds({data}){
 
-  console.log(
-    "FULL MAP DATA:",
-    data
-  );
 
+  const map = useMap();
 
 
-  return (
 
+  useEffect(()=>{
 
-    <div className="card shadow">
 
+    if(data.length > 0){
 
 
-      <div className="card-header">
+      const validData = data.filter(item=>
 
-        <b>
-          Peta Daerah Rawan Banjir
-        </b>
+        item.Latitude &&
+        item.Longitude
 
-      </div>
+      );
 
 
 
+      if(validData.length > 0){
 
 
-      <div className="card-body p-0">
+        map.setView(
 
+          [
+            Number(validData[0].Latitude),
+            Number(validData[0].Longitude)
 
+          ],
 
-        <MapContainer
+          11
 
+        );
 
-          center={[
 
-            -6.2088,
+      }
 
-            106.8456
 
-          ]}
+    }
 
 
-          zoom={11}
 
+  },[data,map]);
 
 
-          style={{
 
-            height:"calc(100vh - 150px)",
+  return null;
 
-            width:"100%"
+}
 
-          }}
 
 
-        >
 
 
 
-          <ResizeMap />
 
+function FullMap({
+  data = [],
+  setSelectedLocation
+}) {
 
 
 
+console.log(
+  "FULLMAP DATA:",
+  data
+);
 
-          <TileLayer
 
 
-            attribution="&copy; OpenStreetMap"
 
 
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+return (
 
 
-          />
 
+<div className="card shadow">
 
 
 
 
 
+<div className="card-header">
 
-          {
+<b>
+Peta Daerah Rawan Banjir
+</b>
 
-            data.map((item,index)=>{
 
+</div>
 
-              const lat = Number(
-                item.Latitude
-              );
 
 
-              const lng = Number(
-                item.Longitude
-              );
 
 
 
 
-              if(
-                isNaN(lat) ||
-                isNaN(lng)
-              ){
+<div className="card-body p-0">
 
-                return null;
 
-              }
 
 
 
+<MapContainer
 
 
-              // pakai jumlah pengungsi
 
-              const pengungsi = Number(
-                item.jumlah_pengungsi || 0
-              );
+key={data.length}
 
 
 
+center={[
 
+-6.2088,
 
-              let warna = "green";
+106.8456
 
-              let radius = 7;
+]}
 
-              let status =
-                "Risiko Rendah";
 
 
+zoom={11}
 
 
 
-              if(pengungsi > 500){
+style={{
 
+height:"calc(100vh - 150px)",
 
-                warna = "red";
+width:"100%"
 
-                radius = 14;
+}}
 
-                status =
-                  "Risiko Tinggi";
 
 
-              }
+>
 
 
-              else if(pengungsi >=100){
 
+<ResizeMap />
 
-                warna = "orange";
 
-                radius = 10;
 
-                status =
-                  "Risiko Sedang";
+<FitBounds data={data}/>
 
 
-              }
 
 
 
 
+<TileLayer
 
 
+attribution="&copy; OpenStreetMap"
 
 
-              return (
+url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 
 
+/>
 
-                <CircleMarker
 
 
 
-                  key={item.id || index}
 
 
 
-                  center={[
 
-                    lat,
 
-                    lng
+{
 
-                  ]}
+data.map((item,index)=>{
 
 
+const lat =
+Number(item.Latitude);
 
-                  radius={radius}
 
 
+const lng =
+Number(item.Longitude);
 
-                  pathOptions={{
 
 
-                    color:warna,
 
 
-                    fillColor:warna,
+if(
 
+isNaN(lat) ||
 
-                    fillOpacity:0.85
+isNaN(lng)
 
+){
 
-                  }}
+return null;
 
+}
 
 
 
-                  eventHandlers={{
 
 
-                    click:()=>{
 
+const pengungsi =
+Number(
+item.jumlah_pengungsi || 0
+);
 
-                      if(setSelectedLocation){
 
-                        setSelectedLocation(item);
 
-                      }
 
 
-                    }
 
+let warna="green";
 
-                  }}
+let radius=7;
 
+let status="Risiko Rendah";
 
 
-                >
 
 
 
+if(pengungsi > 500){
 
 
-                  <Popup>
+warna="red";
 
+radius=14;
 
-                    <h6>
+status="Risiko Tinggi";
 
-                      {item.kelurahan}
 
-                    </h6>
+}
 
+else if(pengungsi >=100){
 
 
-                    <hr />
+warna="orange";
 
+radius=10;
 
+status="Risiko Sedang";
 
 
+}
 
-                    <p>
 
-                      👥 Pengungsi :
 
-                      {" "}
 
-                      <b>
 
-                        {pengungsi.toLocaleString()}
 
-                      </b>
 
-                    </p>
+return(
 
 
 
+<CircleMarker
 
 
-                    <p>
 
-                      📍 Kecamatan :
+key={item.id || index}
 
-                      {" "}
 
-                      {item.kecamatan}
 
-                    </p>
+center={[
 
+lat,
 
+lng
 
+]}
 
 
 
-                    <p>
+radius={radius}
 
-                      🌊 Tinggi Air :
 
-                      {" "}
 
-                      {item.jumlah_rata_rata_ketinggian_air}
+pathOptions={{
 
-                    </p>
 
+color:warna,
 
 
+fillColor:warna,
 
 
-                    <p>
+fillOpacity:0.8
 
-                      Status :
 
-                      {" "}
+}}
 
 
-                      <b
-                        style={{
-                          color:warna
-                        }}
-                      >
 
-                        {status}
 
-                      </b>
+eventHandlers={{
 
 
-                    </p>
+click:()=>{
 
 
+if(setSelectedLocation){
 
+setSelectedLocation(item);
 
-                  </Popup>
+}
 
 
+}
 
 
-                </CircleMarker>
+}}
 
 
 
-              );
+>
 
 
-            })
 
 
-          }
 
+<Popup>
 
 
+<h4>
 
+{item.kelurahan}
 
+</h4>
 
-        </MapContainer>
 
 
+<p>
 
+📍 Kecamatan :
 
-      </div>
+{ " " }
 
+{item.kecamatan}
 
+</p>
 
 
-    </div>
 
 
+<p>
 
-  );
+👥 Jumlah Pengungsi :
+
+<br/>
+
+<b>
+
+{pengungsi.toLocaleString()}
+
+</b>
+
+</p>
+
+
+
+
+
+<p>
+
+🌊 Tinggi Air :
+
+<br/>
+
+{item.jumlah_rata_rata_ketinggian_air}
+
+</p>
+
+
+
+
+
+<p>
+
+Status :
+
+{" "}
+
+<b
+style={{
+color:warna
+}}
+>
+
+{status}
+
+</b>
+
+
+</p>
+
+
+
+</Popup>
+
+
+
+
+
+</CircleMarker>
+
+
+
+);
+
+
+
+})
+
+
+}
+
+
+
+
+
+
+
+</MapContainer>
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+);
 
 
 }

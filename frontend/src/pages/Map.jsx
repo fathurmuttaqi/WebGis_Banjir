@@ -16,22 +16,30 @@ function Map() {
 
   const [selectedLocation, setSelectedLocation] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+
+
+
 
 
   useEffect(() => {
 
-    getData();
+    fetchBanjir();
 
   }, []);
 
 
 
-  const getData = async () => {
+
+
+  const fetchBanjir = async () => {
+
 
     try {
 
 
       const response = await api.get("/banjir");
+
 
 
       console.log(
@@ -40,43 +48,89 @@ function Map() {
       );
 
 
+
       setBanjir(
         response.data.data || []
       );
 
 
+
     } catch(error) {
 
 
-      console.log(
+      console.error(
         "MAP ERROR:",
         error
       );
 
 
+    } finally {
+
+
+      setLoading(false);
+
+
     }
+
 
   };
 
 
 
 
+
+
+  if(loading){
+
+
+    return (
+
+      <div className="main">
+
+        <h2>
+          Loading peta banjir...
+        </h2>
+
+      </div>
+
+    );
+
+
+  }
+
+
+
+
+
+
   return (
+
 
     <div className="main">
 
 
+
+
+
       <div className="title">
+
 
         <h1>
           Peta Daerah Rawan Banjir
         </h1>
 
+
+
         <p>
           Monitoring Daerah Rawan Banjir Jakarta
         </p>
 
+
       </div>
+
+
+
+
 
 
 
@@ -85,21 +139,32 @@ function Map() {
 
 
 
+
+
+
         <div className="map-container">
+
 
 
           <FullMap
 
+
             data={banjir}
+
 
             setSelectedLocation={
               setSelectedLocation
             }
 
+
           />
 
 
+
         </div>
+
+
+
 
 
 
@@ -109,11 +174,18 @@ function Map() {
 
 
 
+
+
           <InfoPanel
+
 
             data={selectedLocation}
 
+
           />
+
+
+
 
 
 
@@ -121,11 +193,20 @@ function Map() {
 
 
 
+
+
+
+
+
           <MapStatistic
+
 
             data={banjir}
 
+
           />
+
+
 
 
 
@@ -133,13 +214,20 @@ function Map() {
 
 
 
+
+
       </div>
+
+
+
 
 
 
     </div>
 
+
   );
+
 
 }
 
